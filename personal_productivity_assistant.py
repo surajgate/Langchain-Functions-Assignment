@@ -16,6 +16,8 @@ def add_task(title: str, deadline: str) -> str:
     """Adds a new task with a deadline."""
     try:
         parsed_deadline = dateparser.parse(deadline)
+        if not parsed_deadline:
+            return "Unable to parse the task deadline."
         task = {
             "title": title,
             "deadline": parsed_deadline.date()
@@ -30,6 +32,8 @@ def set_reminder(task_title: str, reminder_time: str, priority: str = "medium") 
     """Sets a reminder for a task at a specific date and time with a priority."""
     try:
         parsed_datetime = dateparser.parse(reminder_time)
+        if not parsed_datetime:
+            return "Unable to parse the reminder time."
         reminder = {
             "task_title": task_title,
             "reminder_time": parsed_datetime.strftime('%Y-%m-%d %H:%M:%S'),
@@ -54,7 +58,6 @@ tools = [add_task, set_reminder, get_query]
 
 llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0, api_key=OPENAI_API_KEY)
 
-# Create the system prompt
 system_prompt = """
 You are a helpful personal productivity assistant.
 You can help users manage tasks and set reminders.
@@ -63,20 +66,15 @@ If the request is very ambiguous or unrelated to tasks and reminders, respond wi
 Always respond in a friendly and helpful manner.
 """
 
-
-
-# Create the prompt template with agent_scratchpad
 prompt = ChatPromptTemplate.from_messages([
     ("system", system_prompt),
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad")
 ])
 
-# Create the agent using LCEL
 agent = create_openai_functions_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# Create an LCEL chain
 chain = agent_executor
 
 def chat_with_agent():
@@ -89,7 +87,6 @@ def chat_with_agent():
             print("Goodbye!")
             break
         
-        # Pass the input to the agent using LCEL
         response = chain.invoke({"input": user_input})
         print(f"Agent: {response['output']}")
 

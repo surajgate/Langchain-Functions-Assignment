@@ -1,0 +1,54 @@
+Output : 
+
+Welcome to the Personal Productivity Assistant!
+Type 'exit' to quit.
+
+You: Add a task to submit the project report by Monday.
+
+
+> Entering new AgentExecutor chain...
+
+Invoking: `add_task` with `{'title': 'Submit the project report', 'deadline': 'Monday'}`
+
+
+Task 'Submit the project report' added with deadline 2025-03-17Task 'Submit the project report' has been successfully added with a deadline of Monday.
+
+> Finished chain.
+Agent: Task 'Submit the project report' has been successfully added with a deadline of Monday.
+You: Remind me to call John at 3 PM with high priority.
+
+
+> Entering new AgentExecutor chain...
+
+Invoking: `set_reminder` with `{'task_title': 'Call John', 'reminder_time': '3 PM', 'priority': 'high'}`
+
+
+Reminder for 'Call John' set at 2025-03-19 15:00:00 with priority highReminder set successfully!
+
+> Finished chain.
+Agent: Reminder set successfully!
+You:  What tasks do I have today?
+
+
+> Entering new AgentExecutor chain...
+
+Invoking: `get_query` with `{'query_type': 'tasks_today'}`
+
+
+Invalid query type. Use 'tasks' or 'reminders'
+Invoking: `get_query` with `{'query_type': 'tasks'}`
+
+
+Current tasks: [{'title': 'Submit the project report', 'deadline': datetime.date(2025, 3, 17)}]You have the following task for today:
+1. Submit the project report by March 17, 2025.
+
+> Finished chain.
+Agent: You have the following task for today:
+1. Submit the project report by March 17, 2025.
+
+
+Summary : 
+
+To handle ambiguous user queries, I implemented a routing mechanism using LangChain Expression Language (LCEL) with three tools — add_task, set_reminder, and get_query. The system prompt guides the agent to detect user intent and select the right tool. If the intent is unclear, the assistant asks a clarifying question, like "I can help you fetch tasks or reminders, or create new ones. What would you like to do?"
+
+A key challenge was handling date parsing, especially for relative dates like "today" or "tomorrow." I used the dateparser library to extract dates, adding a fallback to return "Unable to parse the date" if parsing fails. This ensures the assistant provides meaningful feedback and maintains a smooth conversation flow.
